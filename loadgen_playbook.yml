@@ -1,0 +1,28 @@
+---
+- name: set up siege on prod server
+  hosts: testenvironment
+  become: yes
+
+  tasks:
+    - name: install siege
+      get_url:
+       url: http://download.joedog.org/siege/siege-3.1.4.tar.gz 
+       dest: /root
+
+    - name: unpack siege
+      unarchive:
+        src: /root/siege-3.1.4.tar.gz
+        dest: /opt
+        remote_src: yes
+
+    - name: group install development tools
+      yum:
+        name: "@Development tools"
+        state: present
+
+    - name: execute make command
+      command:
+        chdir: /opt/siege-3.1.4
+        cmd: ./configure
+        cmd: make
+        cmd: make install

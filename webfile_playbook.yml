@@ -1,0 +1,18 @@
+---
+- name: getting web content
+  hosts: webservers
+  become: yes 
+
+  tasks:
+  - name: get files
+    git:
+      repo: "https://github.com/EditorialPenguin/ExploreCalifornia.git"
+      dest: /usr/share/nginx/html
+      clone: yes
+
+  - name: clearing clear text
+    git_config:
+      name: remote.origin.url
+      value: https://github.com/EditorialPenguin/ExploreCalifornia.git
+      scope: local
+      repo: /var/www/html     

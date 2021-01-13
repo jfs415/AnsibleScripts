@@ -1,0 +1,41 @@
+---
+- name: Set up docker
+  hosts: testenvironment
+  become: yes
+
+  tasks:
+  - name: yum update
+    ignore_errors: yes
+    yum:
+      name: '*'
+      state: latest
+
+  - name: Install packages
+    ignore_errors: yes
+    become: true
+    yum: pkg = {{ item }} state present
+    with_items:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+
+  - name: install docker
+    get_url:
+      url: https://download.docker.com/linux/centos/docker-ce.repo
+      dest: /etc/yum.repos.d/docer-ce.repo
+
+
+  - name: install docker
+    yum:
+      name: docker
+      state: present
+
+  - name: start docker
+    systemd:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: minecraft set-up
+    command: sudo docker run -d -e EULA=true -p 25565:25565 --name mc itzg/minecraft-server
+

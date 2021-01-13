@@ -1,0 +1,36 @@
+---
+- name: Loadbalancer
+  hosts: loadBalancer
+  become: yes
+
+  tasks:
+  - name: download epel
+    yum:
+      name: epel-release
+      state: present
+
+  - name: download nginx
+    yum:
+      name: nginx
+      state: present
+
+- name: stop http
+  hosts: webservers
+  become: yes
+
+  tasks:
+  - name: stop httpd
+    service:
+      name: httpd
+      state: stopped
+
+- name: start nginx
+  hosts: loadBalancer
+  become: yes
+
+  tasks:
+  - name: start nginx
+    service:
+      name: nginx
+      state: started
+      enabled: yes  

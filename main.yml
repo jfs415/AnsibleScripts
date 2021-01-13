@@ -1,0 +1,31 @@
+---
+- name: find device
+  host: testenvironment
+  become: yes
+
+  tasks:
+  - name: check for httpd
+    package:
+      name: httpd
+      sate: present
+
+  - name: Create webserver directory
+    file:
+      path: "/var/www/explorecalifornia.com/html/"
+      state: directory
+      mode: '755'
+      setype: httpd_sys_content_t
+
+  - name: poll website files
+    git:
+      repo: https://github.com/EditorialPenguin/ExploreCalifornia.git
+      dest: "/var/www/explorecalifornia.com/html"
+
+  - name: get the template in place
+    template:
+      src: "files/explorecalifornia.conf"
+      dest: "/etc/httpd/conf.d"
+      serole: object_r
+      setype: httpd_config_t
+      seuser: system_u
+    notify: restart httpd
